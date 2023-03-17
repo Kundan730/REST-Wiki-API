@@ -137,35 +137,77 @@ app
 // });
 
 //Targeting specific articles
-app.route('/articles/:articleTitle').get( async (req, res) => {
-  try{
-    const foundArticle = await Article.findOne({title: req.params.articleTitle});
-    console.log(foundArticle);
-    res.send(foundArticle);
-  } catch(err) {
-    console.log(err);
-    res.send(err);
-  }
-})
-
-.put( async (req, res) => {
-  try {
-    const updateArticles = await Article.findOneAndUpdate({title: req.params.articleTitle},
-      {title: req.body.title, content: req.body.content}, {overwrite: true});
-
-    if(updateArticles) {
-      console.log(updateArticles);
-      res.send('Article updated successfully');
-    } else {
-      res.send('Article not found');
-      res.status(404).send('Article not found');
+app
+  .route('/articles/:articleTitle')
+  .get(async (req, res) => {
+    try {
+      const foundArticle = await Article.findOne({
+        title: req.params.articleTitle,
+      });
+      console.log(foundArticle);
+      res.send(foundArticle);
+    } catch (err) {
+      console.log(err);
+      res.send(err);
     }
-  } catch(err) {
-    console.log(err);
-    res.send(err);
-    res.status(500).send('Error updating article');
-  }
-});
+  })
+
+  .put(async (req, res) => {
+    try {
+      const updateArticles = await Article.findOneAndUpdate(
+        { title: req.params.articleTitle },
+        { title: req.body.title, content: req.body.content },
+        { overwrite: true }
+      );
+
+      if (updateArticles) {
+        console.log(updateArticles);
+        res.send('Article updated successfully');
+      } else {
+        res.send('Article not found');
+        res.status(404).send('Article not found');
+      }
+    } catch (err) {
+      console.log(err);
+      res.send(err);
+      res.status(500).send('Error updating article');
+    }
+  })
+
+  .patch(async (req, res) => {
+    try {
+      const updateArticles = await Article.findOneAndUpdate(
+        { title: req.params.articleTitle },
+        { $set: req.body }
+      );
+      if (updateArticles) {
+        console.log(updateArticles);
+        res.send('Article patched successfully');
+      } else {
+        res.send('Article not found');
+        res.status(404).send('Article not found');
+      }
+    } catch (err) {
+      console.log(err);
+      res.send(err);
+      res.status(500).send('Error patching article');
+    }
+  })
+
+  .delete(async (req, res) => {
+    try {
+      const deleteArticle = await Article.deleteOne(
+        { title: req.params.articleTitle }
+      );
+      if (deleteArticle) {
+        console.log(deleteArticle);
+        res.send('Article deleted successfully');
+      }
+    } catch(err) {
+      console.log(err);
+      res.send(`Error while deleting the article ${err}`);
+    }
+  });
 
 app.listen(port, function () {
   console.log(`App listening at http://localhost:${port}`);
